@@ -160,21 +160,12 @@ impl Snake {
 
 fn main() {
     let mut game: Game = Game::new("Foo", 500, 500);
-
-    let mut snake = Snake::new(
-        25,
-        Color::RGB(0, 255, 0),
-    );
-
-    game.canvas.clear();
-    game.render(&snake);
-    game.canvas.present();
+    let mut snake = Snake::new(25, Color::RGB(0, 255, 0));
 
     let flip_duration = Duration::from_millis(16);
     let update_duration = Duration::from_millis(100);
     let mut update_now = Instant::now();
     let mut flip_now = Instant::now();
-
     let mut direction = Direction::Right;
     'running: loop {
         for event in game.event_pump.poll_iter() {
@@ -218,12 +209,10 @@ fn main() {
 
         if flip_now.elapsed() > flip_duration {
             game.canvas.set_draw_color(Color::RGB(211, 211, 211));
+            game.canvas.clear();
+            game.render(&snake);
+            game.canvas.present();
             flip_now = Instant::now();
         }
-
-        game.canvas.set_draw_color(Color::RGB(211, 211, 211));
-        game.canvas.clear();
-        game.render(&snake);
-        game.canvas.present();
     }
 }
