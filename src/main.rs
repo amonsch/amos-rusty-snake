@@ -1,18 +1,17 @@
-
 extern crate sdl2;
-
-mod snake;
 
 use std::time::{Duration, Instant};
 
-use sdl2::{Sdl, EventPump};
 use sdl2::event::Event;
 use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
-use sdl2::rect::{Rect, Point};
+use sdl2::rect::Rect;
 use sdl2::video::Window;
 use sdl2::render::Canvas;
 
+
+const FLIP_DURATION: Duration = Duration::from_millis(16);
+const UPDATE_DURATION: Duration = Duration::from_millis(100);
 
 struct Block {
     x: i32,
@@ -130,21 +129,10 @@ impl Snake {
                 None => {
                     last_pos = Some(sdl2::rect::Point::new(part.x, part.y));
                     match direction {
-                        Direction::Right => {
-                            part.x += 1;
-                        },
-                        Direction::Left => {
-                            part.x -= 1;
-                        },
-                        Direction::Up => {
-                            part.y -= 1;
-                        },
-                        Direction::Down => {
-                            part.y += 1;
-                        },
-                        _ => {
-                            panic!("Unknown direction!")
-                        }
+                        Direction::Right => { part.x += 1 },
+                        Direction::Left  => { part.x -= 1 },
+                        Direction::Down  => { part.y += 1 },
+                        Direction::Up    => { part.y -= 1 },
                     }
                 },
                 Some(pos) => {
@@ -162,8 +150,6 @@ fn main() {
     let mut game: Game = Game::new("Foo", 500, 500);
     let mut snake = Snake::new(25, Color::RGB(0, 255, 0));
 
-    let flip_duration = Duration::from_millis(16);
-    let update_duration = Duration::from_millis(100);
     let mut update_now = Instant::now();
     let mut flip_now = Instant::now();
     let mut direction = Direction::Right;
@@ -188,26 +174,26 @@ fn main() {
                         direction = Direction::Right;
                     }
                 },
+                Event::KeyDown { keycode: Some(Keycode::Down), ..} => {
+                    if snake.body[0].y < (game.window_height - snake.size as u32) as i32 {
+                        direction = Direction::Down;
+                    }
+                },
                 Event::KeyDown { keycode: Some(Keycode::Up), ..} => {
                     if snake.body[0].y > 0 {
                         direction = Direction::Up;
                     }
                 },
-                Event::KeyDown { keycode: Some(Keycode::Down), ..} => {
-                    if snake.body[0].y < (game.window_width - snake.size as u32) as i32 {
-                        direction = Direction::Down;
-                    }
-                },
-                _ => {}
+                _ => {},
             }
         }
 
-        if update_now.elapsed() > update_duration {
+        if update_now.elapsed() > UPDATE_DURATION {
             snake.crawl(&direction);
             update_now = Instant::now();
         }
 
-        if flip_now.elapsed() > flip_duration {
+        if flip_now.elapsed() > FLIP_DURATION {
             game.canvas.set_draw_color(Color::RGB(211, 211, 211));
             game.canvas.clear();
             game.render(&snake);
