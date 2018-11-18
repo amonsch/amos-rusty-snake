@@ -7,9 +7,9 @@ use sdl2::pixels::Color;
 use sdl2::keyboard::Keycode;
 use sdl2::video::Window;
 
-pub mod renderables;
+pub mod component;
 
-use game::renderables::Component;
+use game::component::Component;
 
 
 pub enum Direction {

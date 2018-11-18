@@ -7,7 +7,7 @@ use sdl2::pixels::Color;
 mod game;
 
 use game::Game;
-use game::renderables::Snake;
+use game::component::Snake;
 
 
 const FLIP_DURATION: Duration = Duration::from_millis(16);
