@@ -12,6 +12,7 @@ pub mod component;
 use game::component::Component;
 
 
+#[derive(Copy,Clone,Debug)]
 pub enum Direction {
     Left,
     Right,
@@ -87,25 +88,33 @@ impl Game {
                 Event::KeyDown { keycode: Some(Keycode::Left), ..} => {
                     match self.state.direction {
                         Direction::Right => {},
-                        _ => { self.state.direction = Direction::Left; }
+                        _ => {
+                            self.state.direction = Direction::Left;
+                        }
                     }
                 },
                 Event::KeyDown { keycode: Some(Keycode::Right), ..} => {
                     match self.state.direction {
                         Direction::Left => {},
-                        _ => { self.state.direction = Direction::Right; }
+                        _ => {
+                            self.state.direction = Direction::Right;
+                        }
                     }
                 },
                 Event::KeyDown { keycode: Some(Keycode::Down), ..} => {
                     match self.state.direction {
                         Direction::Up => {},
-                        _ => { self.state.direction = Direction::Down; }
+                        _ => {
+                            self.state.direction = Direction::Down;
+                        }
                     }
                 },
                 Event::KeyDown { keycode: Some(Keycode::Up), ..} => {
                     match self.state.direction {
                         Direction::Down => {},
-                        _ => { self.state.direction = Direction::Up; }
+                        _ => {
+                            self.state.direction = Direction::Up;
+                        }
                     }
                 },
                 _ => {},

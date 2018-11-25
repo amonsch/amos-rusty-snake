@@ -1,4 +1,3 @@
-
 extern crate sdl2;
 
 use sdl2::pixels::Color;
@@ -10,7 +9,8 @@ use game::{Direction, State};
 
 
 pub trait Component {
-    fn update(&mut self, _state: &mut State) {
+    fn update(&mut self, _state: &mut State) -> bool {
+        return false;
     }
 
     fn render(&mut self, &mut Canvas<Window>) {
@@ -43,11 +43,11 @@ struct Cherry {
 // }
 
 
-#[derive(Debug)]
 pub struct Snake {
     pub size: i32,
     color: Color,
     pub body: Vec<Point>,
+    pub last_valid_directon: Direction,
 }
 
 
@@ -66,49 +66,62 @@ impl Component for Snake {
         }
     }
 
-    fn update(&mut self, state: &mut State) {
-        let mut last_pos: Option<sdl2::rect::Point> = None;
-        for part in self.body.iter_mut() {
-            match last_pos {
-                None => {
-                    last_pos = Some(sdl2::rect::Point::new(part.x, part.y));
-                    match state.direction {
-                        Direction::Right => {
-                            part.x += 1;
-                            if ((part.x + 1) * self.size) as u32 >= state.window_width {
-                                println!("x coord: {}", part.x * self.size);
-                                panic!("Snake hit right wall - game over!")
-                            }
-                        },
-                        Direction::Left  => {
-                            part.x -= 1;
-                            if part.x < 0 {
-                                panic!("Snake hit left wall - game over!")
-                            }
-                        },
-                        Direction::Down  => {
-                            part.y += 1;
-                            if ((part.y + 1) * self.size) as u32 >= state.window_height {
-                                println!("y coord: {}", part.y * self.size);
-                                panic!("Snake hit bottom wall - game over!");
-                            }
-                        },
-                        Direction::Up    => {
-                            part.y -= 1;
-                            if part.y < 0 {
-                                panic!("Snake hit top wall - game over!")
-                            }
-                        },
-                    }
-                },
-                Some(pos) => {
-                    last_pos = Some(sdl2::rect::Point::new(part.x, part.y));
-                    part.x = pos.x;
-                    part.y = pos.y;
-                },
+    fn update(&mut self, state: &mut State) -> bool{
+        let neck = self.body[1].clone();
+
+        let mut last_pos: Option<Point> = None;
+        for (idx, part) in self.body.iter_mut().enumerate() {
+
+            if idx == 0 {
+                last_pos = Some(Point::new(part.x, part.y));
+                match state.direction {
+                    Direction::Right => {
+                        part.x += 1;
+                        if ((part.x + 1) * self.size) as u32 >= state.window_width {
+                            panic!("Snake hit right wall - game over!");
+                        }
+                    },
+                    Direction::Left => {
+                        part.x -= 1;
+                        if part.x < 0 {
+                            panic!("Snake hit left wall - game over!");
+                        }
+                    },
+                    Direction::Down => {
+                        part.y += 1;
+                        if ((part.y + 1) * self.size) as u32 >= state.window_height {
+                            panic!("Snake hit bottom wall - game over!");
+                        }
+                    },
+                    Direction::Up => {
+                        part.y -= 1;
+                        if part.y < 0 {
+                            panic!("Snake hit top wall - game over!");
+                        }
+                    },
+                }
+
+                // If HEAD has the same coordinates as the NECK
+                // revert the position update and mark the update as failed
+                if part.x == neck.x && part.y == neck.y {
+                    let p =  last_pos.unwrap();
+                    part.x = p.x;
+                    part.y = p.y;
+
+                    state.direction = self.last_valid_directon.clone();
+                    return false;
+                } else {
+                    self.last_valid_directon = state.direction.clone();
+                }
+            } else {
+                let p = last_pos.unwrap();
+
+                last_pos = Some(Point::new(part.x, part.y));
+
+                part.x = p.x;
+                part.y = p.y;
             }
         }
-        state.occupied = self.body.clone();
 
         for (idx, part) in self.body.iter().enumerate() {
             if idx == 0 {
@@ -118,8 +131,7 @@ impl Component for Snake {
                 panic!("Snake hit snake - game over!");
             }
         }
-
-
+        return true;
     }
 }
 
@@ -136,6 +148,7 @@ impl Snake {
                 sdl2::rect::Point::new(1, 0),
                 sdl2::rect::Point::new(0, 0),
             ],
+            last_valid_directon: Direction::Right,
         }
     }
 }
