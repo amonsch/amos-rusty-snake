@@ -1,7 +1,6 @@
 extern crate sdl2;
 
 use std::time::{Duration, Instant};
-use sdl2::rect::Point;
 use sdl2::pixels::Color;
 
 mod game;
