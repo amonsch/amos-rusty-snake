@@ -62,7 +62,7 @@ impl Game {
 
         Game {
             canvas: canvas,
-            draw_color: Color::RGB(211, 211, 211),
+            draw_color: Color::RGB(100, 100, 100),
             event_pump: event_pump,
             components: components,
             state: State {

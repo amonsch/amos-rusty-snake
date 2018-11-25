@@ -17,11 +17,10 @@ const UPDATE_DURATION: Duration = Duration::from_millis(125);
 fn main() {
     let mut game: Game = Game::new("Rusty Snake", 600, 600);
 
-    let snake = Snake::new(30, Color::RGB(0, 255, 0));
-
+    let snake = Snake::new(30, Color::RGB(75, 139, 190));
     game.components.push(Box::new(snake));
 
-    let cherry = Cherry::new(30, Color::RGB(255, 0, 0));
+    let cherry = Cherry::new(30, Color::RGB(255, 212, 59));
     game.components.push(Box::new(cherry));
 
     let mut update_now = Instant::now();
