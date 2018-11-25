@@ -1,32 +1,28 @@
 extern crate sdl2;
 
 use std::time::{Duration, Instant};
-
+use sdl2::rect::Point;
 use sdl2::pixels::Color;
 
 mod game;
 
 use game::Game;
-use game::component::Snake;
+use game::component::{Snake, Cherry};
 
 
 const FLIP_DURATION: Duration = Duration::from_millis(16);
-const UPDATE_DURATION: Duration = Duration::from_millis(200);
+const UPDATE_DURATION: Duration = Duration::from_millis(125);
 
 
 fn main() {
-    let mut game: Game = Game::new(
-        "Rusty Snake",
-        500,
-        500,
-    );
+    let mut game: Game = Game::new("Rusty Snake", 600, 600);
 
     let snake = Snake::new(30, Color::RGB(0, 255, 0));
 
     game.components.push(Box::new(snake));
 
-    // let cherry = Cherry::new();
-    // game.components.push(Box::new(cherry));
+    let cherry = Cherry::new(30, Color::RGB(255, 0, 0));
+    game.components.push(Box::new(cherry));
 
     let mut update_now = Instant::now();
     let mut flip_now = Instant::now();

@@ -26,11 +26,12 @@ pub struct State {
     pub window_height: u32,
     pub direction: Direction,
     pub occupied: Vec<Point>,
+    pub cherry_pos: Option<Point>,
     pub quit: bool,
 }
 
 
-pub struct Game{
+pub struct Game {
     pub draw_color: Color,
     pub canvas: sdl2::render::Canvas<Window>,
     pub components: Vec<Box<Component>>,
@@ -70,6 +71,7 @@ impl Game {
                 window_width: window_width,
                 window_height: window_height,
                 occupied: occupied,
+                cherry_pos: None,
             },
         }
     }

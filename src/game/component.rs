@@ -1,4 +1,5 @@
 extern crate sdl2;
+extern crate rand;
 
 use sdl2::pixels::Color;
 use sdl2::rect::{Rect, Point};
@@ -34,20 +35,46 @@ impl Component for Block {
 }
 
 
-struct Cherry {
-    block: Block,
+pub struct Cherry {
+    pub pos: Point,
+    pub size: i32,
+    color: Color,
 }
 
-// impl Component for Cherry {
 
-// }
+impl Component for Cherry {
+    fn update(&mut self, state: &mut State) -> bool {
+        match state.cherry_pos {
+            None => {
+                let max_x = state.window_width / ( self.size as u32);
+                let max_y = state.window_height / (self.size as u32);
+                self.pos.x = (rand::random::<u32>() % max_x) as i32;
+                self.pos.y = (rand::random::<u32>() % max_y) as i32;
+                state.cherry_pos = Some(self.pos.clone());
+            },
+            _ => {}
+        }
+        return true;
+    }
+
+    fn render(&mut self, canvas: &mut Canvas<Window>) {
+        let mut block  = Block {
+            x: self.pos.x * self.size,
+            y: self.pos.y * self.size,
+            width: self.size as u32,
+            height: self.size as u32,
+            color: self.color,
+        };
+        block.render(canvas);
+    }
+}
 
 
 pub struct Snake {
     pub size: i32,
     color: Color,
     pub body: Vec<Point>,
-    pub last_valid_directon: Direction,
+    pub moving_direction: Direction,
 }
 
 
@@ -77,7 +104,7 @@ impl Component for Snake {
                 match state.direction {
                     Direction::Right => {
                         part.x += 1;
-                        if ((part.x + 1) * self.size) as u32 >= state.window_width {
+                        if (part.x * self.size) as u32 >= state.window_width {
                             panic!("Snake hit right wall - game over!");
                         }
                     },
@@ -89,7 +116,7 @@ impl Component for Snake {
                     },
                     Direction::Down => {
                         part.y += 1;
-                        if ((part.y + 1) * self.size) as u32 >= state.window_height {
+                        if (part.y * self.size) as u32 >= state.window_height {
                             panic!("Snake hit bottom wall - game over!");
                         }
                     },
@@ -108,10 +135,10 @@ impl Component for Snake {
                     part.x = p.x;
                     part.y = p.y;
 
-                    state.direction = self.last_valid_directon.clone();
+                    state.direction = self.moving_direction.clone();
                     return false;
                 } else {
-                    self.last_valid_directon = state.direction.clone();
+                    self.moving_direction = state.direction.clone();
                 }
             } else {
                 let p = last_pos.unwrap();
@@ -122,6 +149,18 @@ impl Component for Snake {
                 part.y = p.y;
             }
         }
+
+        match state.cherry_pos {
+            Some(pos) => {
+                if self.body[0] == pos {
+                    state.cherry_pos = None;
+                    self.body.push(last_pos.unwrap());
+                }
+            },
+            _ => {}
+        }
+
+
 
         for (idx, part) in self.body.iter().enumerate() {
             if idx == 0 {
@@ -148,7 +187,17 @@ impl Snake {
                 sdl2::rect::Point::new(1, 0),
                 sdl2::rect::Point::new(0, 0),
             ],
-            last_valid_directon: Direction::Right,
+            moving_direction: Direction::Right,
+        }
+    }
+}
+
+impl Cherry {
+    pub fn new(size: i32, color: Color) -> Cherry {
+        Cherry {
+            pos: Point::new(-1, -1),
+            size: size,
+            color: color,
         }
     }
 }
