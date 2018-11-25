@@ -1,6 +1,6 @@
 # AMOs Rusty Snake
 
-A crappy and incomplete snake clone written in Rust and using SDL2.
+A crappy and incomplete snake clone written in Rust and SDL2.
 
 ## Why ?
 
