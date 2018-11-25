@@ -6,3 +6,4 @@ authors = ["Andreas Monsch <andreas.monsch@gmail.com>"]
 [dependencies]
 sdl2 = "0.31.0"
 gl = "0.6.0"
+rand = "0.6"
