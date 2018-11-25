@@ -1,5 +1,5 @@
 [package]
-name = "sdl2-snake"
+name = "amos-rusty-snake"
 version = "0.1.0"
 authors = ["Andreas Monsch <andreas.monsch@gmail.com>"]
 
